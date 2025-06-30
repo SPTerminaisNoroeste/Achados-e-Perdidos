@@ -136,7 +136,22 @@
 
           // Redireciona para index.html com protocolo na URL
           setTimeout(() => {
+            
+          const btnVer = document.createElement("button");
+          btnVer.textContent = "📄 Ver Protocolo";
+          btnVer.style.marginTop = "20px";
+          btnVer.style.padding = "10px 20px";
+          btnVer.style.fontSize = "16px";
+          btnVer.style.borderRadius = "8px";
+          btnVer.style.border = "none";
+          btnVer.style.background = "#00aaff";
+          btnVer.style.color = "white";
+          btnVer.style.cursor = "pointer";
+          btnVer.onclick = () => {
             window.location.href = `protocolo-popup-com-acoes.html?protocolo=${encodeURIComponent(protocolo)}`;
+          };
+          msg.appendChild(btnVer);
+    
           }, 1000);
 
         } catch (err) {
