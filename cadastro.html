@@ -6,6 +6,7 @@
   <title>Cadastro de Objeto Perdido</title>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
@@ -40,6 +41,8 @@
     <input type="text" id="cor" placeholder="Cor predominante" required />
     <input type="text" id="avarias" placeholder="Possui avarias? Se sim, descreva" required />
     <textarea id="descricao" placeholder="Outras informações relevantes"></textarea>
+    <label for="imagem" style="margin-top:10px;">Caso você preferir, envie-nos uma foto do item perdido:</label>
+    <input type="file" id="imagem" accept="image/*" required />
     <select id="notificar" required>
       <option value="WhatsApp">Receber protocolo por WhatsApp</option>
       <option value="Email">Receber protocolo por Email</option>
@@ -84,10 +87,23 @@
         const descricao = form.descricao.value;
         const notificar = form.notificar.value;
 
+        const imagemInput = document.getElementById("imagem");
+        let urlImagem = "";
+
+        if (imagemInput.files.length > 0) {
+          const file = imagemInput.files[0];
+          const storageRef = firebase.storage().ref();
+          const fileRef = storageRef.child("imagens/" + protocolo + "_" + file.name);
+          await fileRef.put(file);
+          urlImagem = await fileRef.getDownloadURL();
+        }
+
+
         try {
           await db.collection("cadastros").add({
             nome, email, telefone, categoria, marca, cor, avarias, descricao,
             notificar, protocolo, encontrado: false,
+            imagem: urlImagem,
             dataCadastro: new Date().toISOString()
           });
 
