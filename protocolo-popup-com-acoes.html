@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protocolo Gerado</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      background-color: #051a2b;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .popup {
+      background-color: #002b45;
+      padding: 30px;
+      border-radius: 10px;
+      border: 2px solid #00aaff;
+      text-align: center;
+      max-width: 500px;
+    }
+    .popup h2 {
+      color: #00ffcc;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .popup .protocolo {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #ffffff;
+    }
+    .popup p {
+      font-size: 16px;
+      color: #ccc;
+    }
+    .acoes button, .botao-voltar {
+      margin: 8px;
+      padding: 10px 15px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+    .acoes button {
+      background-color: #00aaff;
+      color: white;
+    }
+    .acoes button:hover {
+      background-color: #008fcc;
+    }
+    .botao-voltar {
+      background-color: transparent;
+      border: 1px solid #00aaff;
+      color: #00aaff;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .botao-voltar:hover {
+      background-color: #003d5c;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="popup">
+    <h2>✅ Protocolo Gerado com Sucesso</h2>
+    <p>Seu número de protocolo é:</p>
+    <div class="protocolo" id="protocoloCodigo">Carregando...</div>
+    <p>Guarde esse número para acompanhar seu cadastro ou retirar o item.</p>
+
+    <div class="acoes">
+      <button onclick="copiarProtocolo()">📋 Copiar</button>
+      <button onclick="gerarPDF()">📄 Baixar PDF</button>
+      <button onclick="compartilharWhatsApp()">📱 WhatsApp</button>
+    </div>
+
+    <a href="index.html" class="botao-voltar">← Voltar ao Início</a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const protocolo = params.get("protocolo");
+
+    const protocoloEl = document.getElementById("protocoloCodigo");
+    if (protocolo) {
+      protocoloEl.textContent = protocolo;
+    } else {
+      protocoloEl.textContent = "Não encontrado";
+    }
+
+    function copiarProtocolo() {
+      navigator.clipboard.writeText(protocolo).then(() => {
+        alert("Protocolo copiado com sucesso!");
+      });
+    }
+
+    function gerarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text("Comprovante de Cadastro - Achados e Perdidos", 20, 20);
+      doc.setFontSize(12);
+      doc.text(`Número do Protocolo: ${protocolo}`, 20, 40);
+      doc.text("Guarde esse número para consultas e retirada do item.", 20, 50);
+      doc.save(`Protocolo_${protocolo}.pdf`);
+    }
+
+    function compartilharWhatsApp() {
+      const mensagem = `Olá! Seu cadastro foi realizado com sucesso. Seu número de protocolo é: ${protocolo}`;
+      const link = `https://wa.me/?text=${encodeURIComponent(mensagem)}`;
+      window.open(link, "_blank");
+    }
+  </script>
+</body>
+</html>
