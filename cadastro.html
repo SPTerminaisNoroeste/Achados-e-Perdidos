@@ -67,7 +67,7 @@
       const avarias = document.getElementById("avarias").value;
       const observacoes = document.getElementById("obs").value;
       const fotoInput = document.getElementById("foto");
-      const protocolo = "MT#" + Math.floor(Math.random() * 9000 + 1000) + "@";
+      const protocolo = "MT-" + Math.floor(Math.random() * 9000 + 1000); // protocolo seguro para URL
       const data = new Date().toLocaleDateString("pt-BR");
 
       let imagemURL = "";
