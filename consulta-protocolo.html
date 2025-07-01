@@ -1,1 +1,137 @@
-<!-- Consulta por número de protocolo -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Consultar Protocolo - SP Terminais Noroeste</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: linear-gradient(to right, #051a2b, #00324e);
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    header {
+      padding: 20px;
+      background-color: #002b45;
+      border-bottom: 2px solid #00aaff;
+    }
+
+    header h1 {
+      color: #00ffcc;
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .subtitulo {
+      font-size: 15px;
+      color: #ccc;
+      margin-top: 5px;
+    }
+
+    .conteudo {
+      padding: 40px 20px;
+    }
+
+    .conteudo input {
+      padding: 12px;
+      width: 300px;
+      max-width: 90%;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .conteudo button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      background-color: #00aaff;
+      color: white;
+      cursor: pointer;
+    }
+
+    .conteudo button:hover {
+      background-color: #008fcc;
+    }
+
+    .resultado {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #013044;
+      border: 1px solid #005577;
+      border-radius: 8px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    footer {
+      background-color: #002b45;
+      color: #999;
+      padding: 15px;
+      font-size: 14px;
+      border-top: 1px solid #005577;
+      margin-top: 40px;
+    }
+
+    footer small {
+      display: block;
+      font-size: 11px;
+      color: #888;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Consultar Protocolo</h1>
+    <div class="subtitulo">SP Terminais Noroeste</div>
+  </header>
+
+  <div class="conteudo">
+    <p>Digite o número do protocolo para consultar o status do item:</p>
+    <input type="text" id="inputProtocolo" placeholder="Ex: MT#1234@" />
+    <br />
+    <button onclick="consultar()">Consultar</button>
+
+    <div class="resultado" id="resultado" style="display:none;">
+      <p><strong>Status:</strong> <span id="status"></span></p>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 - SP Terminais Noroeste
+    <small>Prestar serviços de gestão integrada no apoio ao transporte de passageiros e atendimento ao cidadão - SPTerminais Noroeste.</small>
+  </footer>
+
+  <script>
+    function consultar() {
+      const protocolo = document.getElementById("inputProtocolo").value.trim();
+      const resultadoDiv = document.getElementById("resultado");
+      const statusEl = document.getElementById("status");
+
+      if (!protocolo) {
+        alert("Digite um protocolo válido.");
+        return;
+      }
+
+      // Simulação de resposta:
+      if (protocolo === "MT#1234@") {
+        statusEl.textContent = "✅ Encontrado. Aguardando retirada.";
+      } else {
+        statusEl.textContent = "⌛ Ainda não encontrado.";
+      }
+
+      resultadoDiv.style.display = "block";
+    }
+  </script>
+</body>
+</html>

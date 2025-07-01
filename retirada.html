@@ -1,1 +1,127 @@
-<!-- Solicitação de retirada -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solicitar Retirada - SP Terminais Noroeste</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: linear-gradient(to right, #051a2b, #00324e);
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    header {
+      padding: 20px;
+      background-color: #002b45;
+      border-bottom: 2px solid #00aaff;
+    }
+
+    header h1 {
+      color: #00ffcc;
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .subtitulo {
+      font-size: 15px;
+      color: #ccc;
+      margin-top: 5px;
+    }
+
+    .conteudo {
+      padding: 40px 20px;
+    }
+
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #013044;
+      border-radius: 10px;
+      padding: 20px;
+      border: 1px solid #005577;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      margin: 15px 0;
+      padding: 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 15px;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      background-color: #00aaff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #008fcc;
+    }
+
+    #mensagem {
+      margin-top: 20px;
+      color: #00ffcc;
+      font-size: 16px;
+      display: none;
+    }
+
+    footer {
+      background-color: #002b45;
+      color: #999;
+      padding: 15px;
+      font-size: 14px;
+      border-top: 1px solid #005577;
+      margin-top: 40px;
+    }
+
+    footer small {
+      display: block;
+      font-size: 11px;
+      color: #888;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Solicitação de Retirada</h1>
+    <div class="subtitulo">SP Terminais Noroeste</div>
+  </header>
+
+  <div class="conteudo">
+    <form onsubmit="enviarSolicitacao(event)">
+      <input type="text" id="protocolo" placeholder="Número do protocolo" required />
+      <input type="text" id="nome" placeholder="Seu nome completo" required />
+      <input type="tel" id="contato" placeholder="Telefone ou e-mail" required />
+      <button type="submit">Enviar Solicitação</button>
+    </form>
+    <div id="mensagem">✅ Solicitação enviada com sucesso! Entraremos em contato.</div>
+  </div>
+
+  <footer>
+    © 2025 - SP Terminais Noroeste
+    <small>Prestar serviços de gestão integrada no apoio ao transporte de passageiros e atendimento ao cidadão - SPTerminais Noroeste.</small>
+  </footer>
+
+  <script>
+    function enviarSolicitacao(event) {
+      event.preventDefault();
+      document.getElementById("mensagem").style.display = "block";
+      event.target.reset();
+    }
+  </script>
+</body>
+</html>
