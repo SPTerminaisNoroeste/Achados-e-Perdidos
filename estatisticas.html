@@ -4,108 +4,99 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Estatísticas - SP Terminais Noroeste</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Estatísticas - Achados e Perdidos</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
+      font-family: Arial, sans-serif;
       background: linear-gradient(to right, #051a2b, #00324e);
       color: white;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
+      padding: 20px;
       text-align: center;
     }
-
-    header {
-      padding: 20px;
-      background-color: #002b45;
-      border-bottom: 2px solid #00aaff;
-    }
-
-    header h1 {
-      color: #00ffcc;
-      margin: 0;
-      font-size: 26px;
-    }
-
-    .subtitulo {
-      font-size: 15px;
-      color: #ccc;
-      margin-top: 5px;
-    }
-
-    .conteudo {
-      padding: 40px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .bloco {
-      background-color: #013044;
-      border: 1px solid #005577;
+    canvas {
+      background-color: white;
       border-radius: 10px;
-      padding: 20px;
-      width: 250px;
+      margin-top: 30px;
     }
-
-    .bloco h2 {
-      margin: 0;
-      font-size: 36px;
-      color: #00ffcc;
-    }
-
-    .bloco p {
-      margin: 10px 0 0;
-      color: #ccc;
-    }
-
-    footer {
-      background-color: #002b45;
-      color: #999;
-      padding: 15px;
-      font-size: 14px;
-      border-top: 1px solid #005577;
-      margin-top: 40px;
-    }
-
-    footer small {
-      display: block;
-      font-size: 11px;
-      color: #888;
-      margin-top: 5px;
+    select {
+      margin-top: 10px;
+      padding: 8px;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Estatísticas do Sistema</h1>
-    <div class="subtitulo">SP Terminais Noroeste</div>
-  </header>
+  <h1>Estatísticas por Terminal</h1>
+  <select id="periodo">
+    <option value="7">Últimos 7 dias</option>
+    <option value="30">Últimos 30 dias</option>
+    <option value="365">Últimos 12 meses</option>
+  </select>
+  <canvas id="grafico" width="400" height="200"></canvas>
 
-  <div class="conteudo">
-    <div class="bloco">
-      <h2>243</h2>
-      <p>Itens cadastrados</p>
-    </div>
-    <div class="bloco">
-      <h2>187</h2>
-      <p>Itens devolvidos</p>
-    </div>
-    <div class="bloco">
-      <h2>56</h2>
-      <p>Itens ainda não localizados</p>
-    </div>
-    <div class="bloco">
-      <h2>38</h2>
-      <p>Terminais com registros</p>
-    </div>
-  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  <footer>
-    © 2025 - SP Terminais Noroeste
-    <small>Prestar serviços de gestão integrada no apoio ao transporte de passageiros e atendimento ao cidadão - SPTerminais Noroeste.</small>
-  </footer>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQJ2LjON0CXCobB0KmTHyZjqPoFvXip4w",
+      authDomain: "achados-e-perdidos-fa6f4.firebaseapp.com",
+      projectId: "achados-e-perdidos-fa6f4",
+      storageBucket: "achados-e-perdidos-fa6f4.appspot.com",
+      messagingSenderId: "103075703222",
+      appId: "1:103075703222:web:cb83481eaaf5eb1cda3917"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const ctx = document.getElementById('grafico').getContext('2d');
+    let chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Itens registrados',
+          data: [],
+          backgroundColor: '#00aaff'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    async function carregarEstatisticas(dias) {
+      const hoje = new Date();
+      const dataLimite = new Date();
+      dataLimite.setDate(hoje.getDate() - dias);
+
+      const snapshot = await getDocs(collection(db, "cadastros"));
+      const contagem = {};
+
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        const dataRegistro = d.timestamp?.toDate?.() || new Date();
+        if (dataRegistro >= dataLimite) {
+          const terminal = d.local || "Indefinido";
+          contagem[terminal] = (contagem[terminal] || 0) + 1;
+        }
+      });
+
+      chart.data.labels = Object.keys(contagem);
+      chart.data.datasets[0].data = Object.values(contagem);
+      chart.update();
+    }
+
+    document.getElementById("periodo").addEventListener("change", (e) => {
+      carregarEstatisticas(parseInt(e.target.value));
+    });
+
+    carregarEstatisticas(7);
+  </script>
 </body>
 </html>

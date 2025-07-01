@@ -4,64 +4,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Protocolo Gerado</title>
+  <title>Cadastrar Objeto Perdido</title>
   <style>
     body {
+      font-family: Arial, sans-serif;
       background: linear-gradient(to right, #051a2b, #00324e);
       color: white;
-      font-family: Arial, sans-serif;
+      padding: 20px;
       text-align: center;
-      padding: 40px;
     }
-    .protocolo-box {
-      background-color: #012c3c;
-      border: 2px solid #00aaff;
-      border-radius: 10px;
-      padding: 30px;
-      margin: 40px auto;
+    .form-container {
       max-width: 500px;
-      font-size: 24px;
-      color: #00ffcc;
+      margin: 0 auto;
+      background-color: #012c3c;
+      padding: 20px;
+      border-radius: 10px;
     }
-    .info {
-      font-size: 18px;
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
       margin-top: 10px;
-      color: #ccc;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
     }
-    .actions {
-      margin-top: 30px;
-    }
-    .actions a {
-      display: inline-block;
-      margin: 10px;
-      padding: 10px 20px;
+    button {
       background-color: #00aaff;
       color: white;
-      text-decoration: none;
-      border-radius: 6px;
+      cursor: pointer;
     }
-    .actions a:hover {
+    button:hover {
       background-color: #008fcc;
     }
   </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQJ2LjON0CXCobB0KmTHyZjqPoFvXip4w",
+      authDomain: "achados-e-perdidos-fa6f4.firebaseapp.com",
+      projectId: "achados-e-perdidos-fa6f4",
+      storageBucket: "achados-e-perdidos-fa6f4.appspot.com",
+      messagingSenderId: "103075703222",
+      appId: "1:103075703222:web:cb83481eaaf5eb1cda3917",
+      measurementId: "G-W5L88B3TBC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    window.enviarCadastro = async function (event) {
+      event.preventDefault();
+
+      const nome = document.getElementById("nome").value;
+      const telefone = document.getElementById("telefone").value;
+      const documento = document.getElementById("documento").value;
+      const objeto = document.getElementById("objeto").value;
+      const marca = document.getElementById("marca").value;
+      const avarias = document.getElementById("avarias").value;
+      const observacoes = document.getElementById("obs").value;
+      const fotoInput = document.getElementById("foto");
+      const protocolo = "MT-" + Math.floor(Math.random() * 9000 + 1000); // protocolo seguro para URL
+      const data = new Date().toLocaleDateString("pt-BR");
+
+      let imagemURL = "";
+
+      try {
+        if (fotoInput.files.length > 0) {
+          const arquivo = fotoInput.files[0];
+          const storageRef = ref(storage, "fotos/" + protocolo + "_" + arquivo.name);
+          await uploadBytes(storageRef, arquivo);
+          imagemURL = await getDownloadURL(storageRef);
+        }
+
+        await addDoc(collection(db, "cadastros"), {
+          nome, telefone, documento, objeto, marca, avarias, observacoes,
+          protocolo, data, imagemURL, status: "Não encontrado", timestamp: serverTimestamp()
+        });
+
+        window.location.href = `protocolo-popup-com-acoes.html?protocolo=${encodeURIComponent(protocolo)}`;
+      } catch (error) {
+        alert("Erro ao enviar cadastro. Tente novamente.");
+        console.error("Erro:", error);
+      }
+    }
+  </script>
 </head>
 <body>
-  <h1>Cadastro realizado com sucesso!</h1>
-  <div class="protocolo-box" id="protocolo">Carregando protocolo...</div>
-  <div class="info">
-    Guarde este número para consultar ou retirar o item.
+  <h1>Cadastro de Objeto Perdido</h1>
+  <div class="form-container">
+    <form onsubmit="enviarCadastro(event)">
+      <input type="text" id="nome" placeholder="Nome completo" required />
+      <input type="tel" id="telefone" placeholder="Telefone de contato" required />
+      <input type="text" id="documento" placeholder="Documento (RG ou CPF)" required />
+      <select id="objeto" required>
+        <option value="">Selecione o objeto</option>
+        <option>Carteira</option>
+        <option>Documentos</option>
+        <option>Celular</option>
+        <option>Roupa</option>
+        <option>Outros</option>
+      </select>
+      <input type="text" id="marca" placeholder="Marca / Modelo" />
+      <input type="text" id="avarias" placeholder="Avarias / Características Visuais" />
+      <textarea id="obs" placeholder="Observações adicionais"></textarea>
+      <label style="margin-top:10px;display:block;">Foto do objeto (opcional):</label>
+      <input type="file" id="foto" accept="image/*" />
+      <button type="submit">Cadastrar</button>
+    </form>
   </div>
-  <div class="actions">
-    <a href="consulta-protocolo.html">Consultar Situação</a>
-    <a href="index.html">Voltar à Página Inicial</a>
-  </div>
-
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const protocolo = params.get("protocolo");
-    document.getElementById("protocolo").textContent = protocolo 
-      ? "Seu protocolo é: " + protocolo 
-      : "Protocolo não informado.";
-  </script>
 </body>
 </html>
