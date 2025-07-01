@@ -1,1 +1,137 @@
-<!-- Login do administrador -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Administrativo - SP Terminais Noroeste</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: linear-gradient(to right, #051a2b, #00324e);
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    header {
+      padding: 20px;
+      background-color: #002b45;
+      border-bottom: 2px solid #00aaff;
+    }
+
+    header h1 {
+      color: #00ffcc;
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .subtitulo {
+      font-size: 15px;
+      color: #ccc;
+      margin-top: 5px;
+    }
+
+    .conteudo {
+      padding: 40px 20px;
+    }
+
+    form {
+      max-width: 350px;
+      margin: 0 auto;
+      background-color: #013044;
+      border-radius: 10px;
+      padding: 25px;
+      border: 1px solid #005577;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      margin: 15px 0;
+      padding: 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 15px;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      background-color: #00aaff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #008fcc;
+    }
+
+    #mensagem {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #ffcc00;
+    }
+
+    footer {
+      background-color: #002b45;
+      color: #999;
+      padding: 15px;
+      font-size: 14px;
+      border-top: 1px solid #005577;
+      margin-top: 40px;
+    }
+
+    footer small {
+      display: block;
+      font-size: 11px;
+      color: #888;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Login Administrativo</h1>
+    <div class="subtitulo">SP Terminais Noroeste</div>
+  </header>
+
+  <div class="conteudo">
+    <form onsubmit="login(event)">
+      <input type="text" id="usuario" placeholder="Usuário" required />
+      <input type="password" id="senha" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
+    </form>
+    <div id="mensagem"></div>
+  </div>
+
+  <footer>
+    © 2025 - SP Terminais Noroeste
+    <small>Prestar serviços de gestão integrada no apoio ao transporte de passageiros e atendimento ao cidadão - SPTerminais Noroeste.</small>
+  </footer>
+
+  <script>
+    function login(event) {
+      event.preventDefault();
+      const usuario = document.getElementById("usuario").value;
+      const senha = document.getElementById("senha").value;
+      const msg = document.getElementById("mensagem");
+
+      if (usuario === "admin" && senha === "1234") {
+        msg.style.color = "#00ffcc";
+        msg.textContent = "✅ Login bem-sucedido! Redirecionando...";
+        setTimeout(() => {
+          window.location.href = "painel.html";
+        }, 2000);
+      } else {
+        msg.style.color = "#ff5050";
+        msg.textContent = "❌ Usuário ou senha inválidos.";
+      }
+    }
+  </script>
+</body>
+</html>
