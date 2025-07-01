@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Consulta Pública de Itens - SP Terminais Noroeste</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: linear-gradient(to right, #051a2b, #00324e);
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    header {
+      padding: 20px;
+      background-color: #002b45;
+      border-bottom: 2px solid #00aaff;
+    }
+
+    header h1 {
+      color: #00ffcc;
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .subtitulo {
+      font-size: 15px;
+      color: #ccc;
+      margin-top: 5px;
+    }
+
+    .conteudo {
+      padding: 40px 20px;
+    }
+
+    .item {
+      background-color: #013044;
+      border: 1px solid #005577;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px auto;
+      max-width: 600px;
+      text-align: left;
+      color: #fff;
+    }
+
+    .item strong {
+      color: #00ccff;
+    }
+
+    footer {
+      background-color: #002b45;
+      color: #999;
+      padding: 15px;
+      font-size: 14px;
+      border-top: 1px solid #005577;
+      margin-top: 40px;
+    }
+
+    footer small {
+      display: block;
+      font-size: 11px;
+      color: #888;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Consulta Pública de Itens</h1>
+    <div class="subtitulo">SP Terminais Noroeste</div>
+  </header>
+
+  <div class="conteudo" id="lista-itens">
+    <!-- Itens serão carregados dinamicamente aqui -->
+  </div>
+
+  <footer>
+    © 2025 - SP Terminais Noroeste
+    <small>Prestar serviços de gestão integrada no apoio ao transporte de passageiros e atendimento ao cidadão - SPTerminais Noroeste.</small>
+  </footer>
+
+  <script>
+    // Simulação de carregamento de dados vindos do banco (Firebase)
+    const itens = [
+      {
+        protocolo: "MT#1234@",
+        item: "Chave de carro com chaveiro azul",
+        local: "Terminal Norte",
+        status: "Não encontrado",
+        data: "2025-06-28"
+      },
+      {
+        protocolo: "MT#4321@",
+        item: "Celular Samsung prata",
+        local: "Terminal Oeste",
+        status: "Encontrado",
+        data: "2025-06-25"
+      }
+    ];
+
+    const container = document.getElementById("lista-itens");
+    itens.forEach(dado => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+        <p><strong>Item:</strong> ${dado.item}</p>
+        <p><strong>Protocolo:</strong> ${dado.protocolo}</p>
+        <p><strong>Local:</strong> ${dado.local}</p>
+        <p><strong>Status:</strong> ${dado.status}</p>
+        <p><strong>Data:</strong> ${dado.data}</p>
+      `;
+      container.appendChild(div);
+    });
+  </script>
+</body>
+</html>
