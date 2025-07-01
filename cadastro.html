@@ -28,7 +28,7 @@
     }
 
     .form-container {
-      max-width: 500px;
+      max-width: 550px;
       margin: 30px auto;
       background: #013044;
       padding: 20px;
@@ -84,6 +84,7 @@
       <input type="text" placeholder="Nome completo" required />
       <input type="tel" placeholder="Telefone de contato" required />
       <input type="text" placeholder="Documento (RG ou CPF)" required />
+
       <select id="objeto" required>
         <option value="">Selecione o objeto</option>
         <option>Carteira</option>
@@ -92,8 +93,14 @@
         <option>Roupa</option>
         <option>Outros</option>
       </select>
-      <textarea placeholder="Descrição adicional" rows="4"></textarea>
+
+      <input type="text" placeholder="Marca / Modelo" />
+      <input type="text" placeholder="Avarias / Características Visuais" />
+      <textarea placeholder="Observações adicionais" rows="4"></textarea>
+
+      <label style="text-align:left;display:block;font-size:14px;color:#ccc;">(Opcional) Envie uma foto do objeto:</label>
       <input type="file" accept="image/*" />
+
       <button type="submit">Cadastrar</button>
     </form>
   </div>
