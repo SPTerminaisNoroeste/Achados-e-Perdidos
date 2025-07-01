@@ -36,7 +36,7 @@
       border: 1px solid #005577;
     }
 
-    input, textarea, button {
+    input, select, textarea, button {
       width: 100%;
       padding: 12px;
       margin: 10px 0;
@@ -83,7 +83,15 @@
     <form onsubmit="gerarProtocolo(event)">
       <input type="text" placeholder="Nome completo" required />
       <input type="tel" placeholder="Telefone de contato" required />
-      <input type="text" id="objeto" placeholder="Objeto perdido" required />
+      <input type="text" placeholder="Documento (RG ou CPF)" required />
+      <select id="objeto" required>
+        <option value="">Selecione o objeto</option>
+        <option>Carteira</option>
+        <option>Documentos</option>
+        <option>Celular</option>
+        <option>Roupa</option>
+        <option>Outros</option>
+      </select>
       <textarea placeholder="Descrição adicional" rows="4"></textarea>
       <input type="file" accept="image/*" />
       <button type="submit">Cadastrar</button>
