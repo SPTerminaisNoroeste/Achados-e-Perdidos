@@ -2,192 +2,150 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel Administrativo - SP Terminais Noroeste</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(to right, #051a2b, #00324e);
       color: white;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      text-align: center;
       padding: 20px;
-      background: #002b45;
-      border-bottom: 2px solid #00aaff;
     }
-    header h1 {
-      margin: 0;
+    h1 {
+      text-align: center;
       color: #00ffcc;
     }
-    .subtitulo {
-      font-size: 14px;
-      color: #ccc;
-    }
-    .painel {
-      padding: 20px;
+    input, select {
+      padding: 8px;
+      font-size: 16px;
+      margin-bottom: 10px;
     }
     button {
-      padding: 10px 20px;
+      padding: 6px 12px;
+      font-size: 14px;
+      margin-left: 5px;
       background-color: #00aaff;
-      color: white;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 5px;
+      color: white;
       cursor: pointer;
-      margin-bottom: 20px;
     }
     button:hover {
-      background-color: #008fcc;
+      background-color: #007bbb;
     }
     table {
       width: 100%;
+      margin-top: 20px;
       border-collapse: collapse;
-      background-color: #013044;
+      background-color: #012c3c;
     }
     th, td {
+      border: 1px solid #005577;
       padding: 10px;
-      border-bottom: 1px solid #005577;
+      font-size: 14px;
     }
     th {
-      background-color: #005577;
+      background-color: #004c66;
     }
     tr:nth-child(even) {
-      background-color: #00293d;
-    }
-    form {
-      margin-top: 20px;
-      background-color: #012b3a;
-      padding: 20px;
-      border-radius: 10px;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
-      border: none;
-      font-size: 15px;
-    }
-    .oculto { display: none; }
-    .imagem {
-      max-width: 100px;
-      max-height: 80px;
+      background-color: #014054;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Painel Administrativo</h1>
-    <div class="subtitulo">SP Terminais Noroeste</div>
-  </header>
+  <h1>Painel Administrativo</h1>
+<div style="text-align:center;"><a href="estatisticas.html" style="display:inline-block;background:#00aaff;color:white;padding:8px 16px;margin-bottom:20px;border-radius:5px;text-decoration:none;">📊 Ver Gráficos</a></div>
 
-  <div class="painel">
-    <button onclick="document.getElementById('formulario').classList.toggle('oculto')">
-      Registrar Item Recebido
-    </button>
-
-    <form id="formulario" class="oculto" onsubmit="registrarItem(event)">
-      <input type="text" id="objeto" placeholder="Objeto perdido (ex: Carteira, Celular...)" required />
-      <input type="text" id="marca" placeholder="Marca / Modelo" />
-      <input type="text" id="avarias" placeholder="Avarias ou características visuais" />
-      <select id="local" required>
-        <option value="">Selecione o terminal</option>
-        <option>TPH</option><option>TCL</option><option>TPI</option><option>TAG</option>
-        <option>TNC</option><option>TLA</option><option>TPR</option><option>TJB</option>
-        <option>PCL</option><option>PEL</option>
-      </select>
-      <input type="file" id="foto" accept="image/*" />
-      <button type="submit">Salvar Registro</button>
-    </form>
-
-      <a href="consulta-publica.html">🔎 Consultar</a>       <a href="estatísticas.html"> Gráfico</a>
-    
-    <h2>Itens Cadastrados</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Protocolo</th>
-          <th>Objeto</th>
-          <th>Local</th>
-          <th>Status</th>
-          <th>Data</th>
-          <th>Imagem</th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr><td colspan="6">Carregando dados...</td></tr>
-      </tbody>
-    </table>
+  <div style="text-align:center;">
+    <input type="text" id="busca" placeholder="Buscar por nome, protocolo, objeto..." oninput="carregarTabela()">
+    <button onclick="registrarEntrega()">Registrar Entrega Manual</button>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+  <table>
+    <thead>
+      <tr>
+        <th>Protocolo</th>
+        <th>Nome</th>
+        <th>Objeto</th>
+        <th>Status</th>
+        <th>Data</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tabela"></tbody>
+  </table>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBQJ2LjON0CXCobB0KmTHyZjqPoFvXip4w",
-      authDomain: "achados-e-perdidos-fa6f4.firebaseapp.com",
-      projectId: "achados-e-perdidos-fa6f4",
-      storageBucket: "achados-e-perdidos-fa6f4.appspot.com",
-      messagingSenderId: "103075703222",
-      appId: "1:103075703222:web:cb83481eaaf5eb1cda3917",
-      measurementId: "G-W5L88B3TBC"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    async function registrarItem(event) {
-      event.preventDefault();
-      const objeto = document.getElementById("objeto").value;
-      const marca = document.getElementById("marca").value;
-      const avarias = document.getElementById("avarias").value;
-      const local = document.getElementById("local").value;
-      const fotoInput = document.getElementById("foto");
-      const protocolo = "MT#" + Math.floor(Math.random() * 9000 + 1000) + "@";
-      const data = new Date().toLocaleDateString("pt-BR");
-      let imagemURL = "";
-
-      if (fotoInput.files.length > 0) {
-        const arquivo = fotoInput.files[0];
-        const storageRef = ref(storage, "fotos/" + protocolo + "_" + arquivo.name);
-        await uploadBytes(storageRef, arquivo);
-        imagemURL = await getDownloadURL(storageRef);
-      }
-
-      await addDoc(collection(db, "cadastros"), {
-        objeto, marca, avarias, local, protocolo, status: "Encontrado",
-        imagemURL, data, timestamp: serverTimestamp()
-      });
-
-      alert("Item registrado com sucesso!");
-      location.reload();
+  <script>
+    function getCadastros() {
+      return JSON.parse(localStorage.getItem("cadastros")) || [];
     }
 
-    async function carregarTabela() {
-      const tbody = document.getElementById("tbody");
-      tbody.innerHTML = "";
-      const querySnapshot = await getDocs(collection(db, "cadastros"));
-      querySnapshot.forEach((doc) => {
-        const d = doc.data();
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${d.protocolo || ""}</td>
-          <td>${d.objeto || ""}</td>
-          <td>${d.local || ""}</td>
-          <td>${d.status || ""}</td>
-          <td>${d.data || ""}</td>
-          <td>${d.imagemURL ? `<img src="${d.imagemURL}" class="imagem">` : "-"}</td>
-        `;
-        tbody.appendChild(tr);
+    function salvarCadastros(lista) {
+      localStorage.setItem("cadastros", JSON.stringify(lista));
+    }
+
+    function carregarTabela() {
+      const tabela = document.getElementById("tabela");
+      const busca = document.getElementById("busca").value.toLowerCase();
+      const dados = getCadastros();
+      tabela.innerHTML = "";
+
+      dados.forEach((dado, index) => {
+        if (
+          dado.nome.toLowerCase().includes(busca) ||
+          dado.protocolo.toLowerCase().includes(busca) ||
+          dado.objeto.toLowerCase().includes(busca)
+        ) {
+          const linha = `
+            <tr>
+              <td>${dado.protocolo}</td>
+              <td>${dado.nome}</td>
+              <td>${dado.objeto}</td>
+              <td>${dado.status}</td>
+              <td>${dado.data}</td>
+              <td>
+                <button onclick="alterarStatus(${index}, 'Encontrado')">Marcar Encontrado</button>
+                <button onclick="alterarStatus(${index}, 'Devolvido')">Marcar Devolvido</button>
+              </td>
+            </tr>
+          `;
+          tabela.innerHTML += linha;
+        }
       });
+
+      if (tabela.innerHTML === "") {
+        tabela.innerHTML = "<tr><td colspan='6'>Nenhum resultado encontrado.</td></tr>";
+      }
+    }
+
+    function alterarStatus(index, status) {
+      const dados = getCadastros();
+      dados[index].status = status;
+      salvarCadastros(dados);
+      carregarTabela();
+    }
+
+    function registrarEntrega() {
+      const nome = prompt("Nome do cidadão:");
+      const telefone = prompt("Telefone de contato:");
+      const documento = prompt("Documento (RG/CPF):");
+      const objeto = prompt("Tipo de objeto:");
+      const marca = prompt("Marca / Modelo:");
+      const avarias = prompt("Avarias / Características:");
+      const protocolo = "MT-" + Math.floor(Math.random() * 9000 + 1000);
+      const data = new Date().toLocaleDateString("pt-BR");
+
+      const novo = {
+        nome, telefone, documento, objeto, marca, avarias,
+        observacoes: "",
+        protocolo, status: "Encontrado", data
+      };
+
+      const lista = getCadastros();
+      lista.push(novo);
+      salvarCadastros(lista);
+      carregarTabela();
     }
 
     carregarTabela();

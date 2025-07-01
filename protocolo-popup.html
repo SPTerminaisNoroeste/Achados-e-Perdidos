@@ -7,41 +7,52 @@
   <title>Protocolo Gerado</title>
   <style>
     body {
-      background: linear-gradient(to right, #051a2b, #00324e);
+      background-color: #012030;
       color: white;
       font-family: Arial, sans-serif;
+      padding: 40px;
       text-align: center;
-      padding: 50px 20px;
     }
-
-    .caixa {
-      background-color: #002b45;
-      border: 2px solid #00aaff;
-      border-radius: 12px;
-      padding: 30px;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-
-    .protocolo {
-      font-size: 26px;
+    h1 {
       color: #00ffcc;
-      margin-top: 20px;
+    }
+    .protocolo-box {
+      margin: 30px auto;
+      padding: 20px;
+      border: 2px solid #00aaff;
+      background-color: #023049;
+      color: #00ffcc;
+      font-size: 22px;
+      border-radius: 10px;
+      max-width: 500px;
+    }
+    a {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: #00aaff;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    a:hover {
+      background-color: #007bbb;
     }
   </style>
 </head>
 <body>
-  <div class="caixa">
-    <h2>Cadastro realizado com sucesso!</h2>
-    <p>Estamos analisando seu item conforme informado.</p>
-    <p class="protocolo" id="protocolo"></p>
-    <p>Guarde esse número para futuras consultas.</p>
-  </div>
+  <h1>Cadastro realizado com sucesso!</h1>
+  <div class="protocolo-box" id="protocolo">Protocolo não informado.</div>
+  <p>Guarde este número para consultar ou retirar o item.</p>
+  <a href="listar-cadastros-offline.html">Consultar Situação</a>
+  <a href="index.html">Voltar à Página Inicial</a>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const protocolo = urlParams.get("protocolo");
-    document.getElementById("protocolo").innerText = protocolo;
+    if (protocolo) {
+      document.getElementById("protocolo").textContent = "Seu protocolo é: " + protocolo;
+    }
   </script>
 </body>
 </html>

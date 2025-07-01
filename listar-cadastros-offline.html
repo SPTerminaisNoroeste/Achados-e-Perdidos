@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Consultar Cadastros Locais</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #051a2b, #00324e);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #00ffcc;
+    }
+    table {
+      width: 100%;
+      max-width: 1000px;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background-color: #012c3c;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #005577;
+      font-size: 14px;
+    }
+    th {
+      background-color: #004c66;
+    }
+    tr:nth-child(even) {
+      background-color: #013949;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cadastros Salvos no Navegador</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Protocolo</th>
+        <th>Nome</th>
+        <th>Objeto</th>
+        <th>Status</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaRegistros">
+      <tr><td colspan="5">Carregando...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const registros = JSON.parse(localStorage.getItem("cadastros")) || [];
+    const tabela = document.getElementById("tabelaRegistros");
+
+    if (registros.length === 0) {
+      tabela.innerHTML = "<tr><td colspan='5'>Nenhum cadastro encontrado.</td></tr>";
+    } else {
+      tabela.innerHTML = "";
+      registros.forEach(c => {
+        const linha = `
+          <tr>
+            <td>${c.protocolo}</td>
+            <td>${c.nome}</td>
+            <td>${c.objeto}</td>
+            <td>${c.status}</td>
+            <td>${c.data}</td>
+          </tr>
+        `;
+        tabela.innerHTML += linha;
+      });
+    }
+  </script>
+</body>
+</html>
