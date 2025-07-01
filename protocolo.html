@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Protocolo Gerado - SP Terminais Noroeste</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #051a2b;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+
+    .popup {
+      background-color: #002b45;
+      padding: 30px;
+      border-radius: 10px;
+      border: 2px solid #00aaff;
+      max-width: 500px;
+    }
+
+    .popup h2 {
+      color: #00ffcc;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .protocolo {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #ffffff;
+    }
+
+    .popup p {
+      font-size: 16px;
+      color: #ccc;
+    }
+
+    .botao-voltar {
+      margin-top: 20px;
+      display: inline-block;
+      background-color: #00aaff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    .botao-voltar:hover {
+      background-color: #008fcc;
+    }
+  </style>
+</head>
+<body>
+  <div class="popup">
+    <h2>✅ Protocolo Gerado com Sucesso</h2>
+    <p>Seu número de protocolo é:</p>
+    <div class="protocolo" id="protocoloCodigo">Carregando...</div>
+    <p>Guarde este número para consultar ou retirar seu item.</p>
+    <a href="index.html" class="botao-voltar">← Voltar ao Início</a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const protocolo = params.get("protocolo");
+    document.getElementById("protocoloCodigo").textContent = protocolo || "Não encontrado";
+  </script>
+</body>
+</html>
