@@ -4,40 +4,73 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Estatísticas - Achados e Perdidos</title>
+  <title>Estatísticas - SP Terminais Noroeste</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(to right, #051a2b, #00324e);
       color: white;
-      padding: 20px;
       text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #00ffcc;
+    }
+    .grafico-container {
+      background-color: #012b3a;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 900px;
     }
     canvas {
+      max-width: 100%;
       background-color: white;
-      border-radius: 10px;
-      margin-top: 30px;
+      border-radius: 8px;
     }
     select {
-      margin-top: 10px;
-      padding: 8px;
-      font-size: 16px;
+      margin: 10px;
+      padding: 10px;
+      font-size: 15px;
     }
   </style>
 </head>
 <body>
-  <h1>Estatísticas por Terminal</h1>
-  <select id="periodo">
-    <option value="7">Últimos 7 dias</option>
-    <option value="30">Últimos 30 dias</option>
-    <option value="365">Últimos 12 meses</option>
-  </select>
-  <canvas id="grafico" width="400" height="200"></canvas>
+  <h1>Estatísticas de Objetos Cadastrados</h1>
+
+  <div>
+    <label for="terminal">Terminal:</label>
+    <select id="terminal">
+      <option value="TODOS">Todos os Terminais</option>
+      <option value="TPH">TPH</option>
+      <option value="TCL">TCL</option>
+      <option value="TPI">TPI</option>
+      <option value="TAG">TAG</option>
+      <option value="TNC">TNC</option>
+      <option value="TLA">TLA</option>
+      <option value="TPR">TPR</option>
+      <option value="TJB">TJB</option>
+      <option value="PCL">PCL</option>
+      <option value="PEL">PEL</option>
+    </select>
+
+    <label for="periodo">Período:</label>
+    <select id="periodo">
+      <option value="semanal">Semanal</option>
+      <option value="mensal">Mensal</option>
+      <option value="anual">Anual</option>
+    </select>
+    <button onclick="atualizarGrafico()">Atualizar</button>
+  </div>
+
+  <div class="grafico-container">
+    <canvas id="grafico"></canvas>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBQJ2LjON0CXCobB0KmTHyZjqPoFvXip4w",
@@ -45,58 +78,64 @@
       projectId: "achados-e-perdidos-fa6f4",
       storageBucket: "achados-e-perdidos-fa6f4.appspot.com",
       messagingSenderId: "103075703222",
-      appId: "1:103075703222:web:cb83481eaaf5eb1cda3917"
+      appId: "1:103075703222:web:cb83481eaaf5eb1cda3917",
+      measurementId: "G-W5L88B3TBC"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const ctx = document.getElementById('grafico').getContext('2d');
-    let chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'Itens registrados',
-          data: [],
-          backgroundColor: '#00aaff'
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: { beginAtZero: true }
-        }
-      }
-    });
+    let grafico;
 
-    async function carregarEstatisticas(dias) {
-      const hoje = new Date();
-      const dataLimite = new Date();
-      dataLimite.setDate(hoje.getDate() - dias);
+    async function atualizarGrafico() {
+      const terminalSelecionado = document.getElementById("terminal").value;
+      const periodo = document.getElementById("periodo").value;
+      const now = new Date();
+      const dados = {};
 
       const snapshot = await getDocs(collection(db, "cadastros"));
-      const contagem = {};
-
       snapshot.forEach((doc) => {
-        const d = doc.data();
-        const dataRegistro = d.timestamp?.toDate?.() || new Date();
-        if (dataRegistro >= dataLimite) {
-          const terminal = d.local || "Indefinido";
-          contagem[terminal] = (contagem[terminal] || 0) + 1;
+        const data = doc.data();
+        const dataRegistro = new Date(data.timestamp?.seconds * 1000 || Date.parse(data.data));
+        const diffDias = Math.floor((now - dataRegistro) / (1000 * 60 * 60 * 24));
+        const local = data.local || "OUTROS";
+
+        if (
+          (periodo === "semanal" && diffDias <= 7) ||
+          (periodo === "mensal" && diffDias <= 30) ||
+          (periodo === "anual" && diffDias <= 365)
+        ) {
+          const chave = terminalSelecionado === "TODOS" ? local : terminalSelecionado;
+          if (terminalSelecionado === "TODOS" || local === terminalSelecionado) {
+            dados[chave] = (dados[chave] || 0) + 1;
+          }
         }
       });
 
-      chart.data.labels = Object.keys(contagem);
-      chart.data.datasets[0].data = Object.values(contagem);
-      chart.update();
+      const labels = Object.keys(dados);
+      const valores = Object.values(dados);
+
+      if (grafico) grafico.destroy();
+
+      grafico = new Chart(document.getElementById("grafico"), {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Objetos Registrados",
+            data: valores,
+            backgroundColor: "#00aaff"
+          }]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
     }
 
-    document.getElementById("periodo").addEventListener("change", (e) => {
-      carregarEstatisticas(parseInt(e.target.value));
-    });
-
-    carregarEstatisticas(7);
+    atualizarGrafico();
   </script>
 </body>
 </html>

@@ -11,57 +11,65 @@
       color: white;
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 40px;
+      padding: 50px 20px;
     }
-    .protocolo-box {
-      background-color: #012c3c;
+
+    .caixa {
+      background-color: #002b45;
       border: 2px solid #00aaff;
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 30px;
-      margin: 40px auto;
-      max-width: 500px;
-      font-size: 24px;
+      max-width: 450px;
+      margin: 0 auto;
+    }
+
+    .protocolo {
+      font-size: 28px;
       color: #00ffcc;
+      margin: 20px 0;
+      font-weight: bold;
     }
-    .info {
-      font-size: 18px;
-      margin-top: 10px;
-      color: #ccc;
+
+    .acoes {
+      margin-top: 20px;
     }
-    .actions {
-      margin-top: 30px;
-    }
-    .actions a {
-      display: inline-block;
-      margin: 10px;
-      padding: 10px 20px;
+
+    .acoes a {
+      display: block;
+      margin: 8px auto;
+      padding: 12px;
+      width: 90%;
+      max-width: 300px;
       background-color: #00aaff;
       color: white;
       text-decoration: none;
       border-radius: 6px;
+      font-size: 16px;
     }
-    .actions a:hover {
-      background-color: #008fcc;
+
+    .acoes a:hover {
+      background-color: #007fcc;
     }
   </style>
 </head>
 <body>
-  <h1>Cadastro realizado com sucesso!</h1>
-  <div class="protocolo-box" id="protocolo">Carregando protocolo...</div>
-  <div class="info">
-    Guarde este número para consultar ou retirar o item.
-  </div>
-  <div class="actions">
-    <a href="consulta-protocolo.html">Consultar Situação</a>
-    <a href="index.html">Voltar à Página Inicial</a>
+  <div class="caixa">
+    <h2>Cadastro realizado com sucesso!</h2>
+    <p>Estamos analisando seu item conforme informado.</p>
+    <div class="protocolo" id="protocolo"></div>
+    <p>Guarde esse número para futuras consultas.</p>
+
+    <div class="acoes">
+      <a href="consulta-protocolo.html">Consultar status</a>
+      <a href="retirada.html">Solicitar retirada</a>
+      <a href="index.html">Voltar à página inicial</a>
+    </div>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const protocolo = params.get("protocolo");
-    document.getElementById("protocolo").textContent = protocolo 
-      ? "Seu protocolo é: " + protocolo 
-      : "Protocolo não informado.";
+    const urlParams = new URLSearchParams(window.location.search);
+    const protocolo = urlParams.get("protocolo");
+    document.getElementById("protocolo").innerText = protocolo;
   </script>
 </body>
 </html>
