@@ -6,47 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cadastrar Objeto Perdido - SP Terminais Noroeste</title>
   <link rel="stylesheet" href="style.css">
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBQJ2LjON0CXCobB0KmTHyZjqPoFvXip4w",
-      authDomain: "achados-e-perdidos-fa6f4.firebaseapp.com",
-      projectId: "achados-e-perdidos-fa6f4",
-      storageBucket: "achados-e-perdidos-fa6f4.appspot.com",
-      messagingSenderId: "103075703222",
-      appId: "1:103075703222:web:cb83481eaaf5eb1cda3917",
-      measurementId: "G-W5L88B3TBC"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.enviarFormulario = async function(event) {
-      event.preventDefault();
-
-      const nome = document.getElementById("nome").value;
-      const telefone = document.getElementById("telefone").value;
-      const documento = document.getElementById("documento").value;
-      const objeto = document.getElementById("objeto").value;
-      const marca = document.getElementById("marca").value;
-      const avarias = document.getElementById("avarias").value;
-      const observacoes = document.getElementById("obs").value;
-
-      const protocolo = "MT#" + Math.floor(Math.random() * 9000 + 1000) + "@";
-
-      await addDoc(collection(db, "cadastros"), {
-        nome, telefone, documento, objeto, marca, avarias, observacoes,
-        protocolo,
-        status: "Não encontrado",
-        data: new Date().toLocaleDateString("pt-BR"),
-        timestamp: serverTimestamp()
-      });
-
-      window.location.href = `protocolo-popup.html?protocolo=${encodeURIComponent(protocolo)}`;
-    };
-  </script>
   <style>
     body {
       background: linear-gradient(to right, #051a2b, #00324e);
@@ -121,10 +80,10 @@
   </header>
 
   <div class="form-container">
-    <form onsubmit="enviarFormulario(event)">
-      <input type="text" id="nome" placeholder="Nome completo" required />
-      <input type="tel" id="telefone" placeholder="Telefone de contato" required />
-      <input type="text" id="documento" placeholder="Documento (RG ou CPF)" required />
+    <form onsubmit="gerarProtocolo(event)">
+      <input type="text" placeholder="Nome completo" required />
+      <input type="tel" placeholder="Telefone de contato" required />
+      <input type="text" placeholder="Documento (RG ou CPF)" required />
 
       <select id="objeto" required>
         <option value="">Selecione o objeto</option>
@@ -135,9 +94,9 @@
         <option>Outros</option>
       </select>
 
-      <input type="text" id="marca" placeholder="Marca / Modelo" />
-      <input type="text" id="avarias" placeholder="Avarias / Características Visuais" />
-      <textarea id="obs" placeholder="Observações adicionais" rows="4"></textarea>
+      <input type="text" placeholder="Marca / Modelo" />
+      <input type="text" placeholder="Avarias / Características Visuais" />
+      <textarea placeholder="Observações adicionais" rows="4"></textarea>
 
       <label style="text-align:left;display:block;font-size:14px;color:#ccc;">(Opcional) Envie uma foto do objeto:</label>
       <input type="file" accept="image/*" />
@@ -150,5 +109,14 @@
     © 2025 - SP Terminais Noroeste<br/>
     <small>Prestar serviços de gestão integrada no apoio ao transporte de passageiros e atendimento ao cidadão.</small>
   </footer>
+
+  <script>
+    function gerarProtocolo(event) {
+      event.preventDefault();
+      const random = Math.floor(Math.random() * 9000 + 1000);
+      const protocolo = `MT#${random}@`;
+      window.location.href = `protocolo-popup.html?protocolo=${encodeURIComponent(protocolo)}`;
+    }
+  </script>
 </body>
 </html>
