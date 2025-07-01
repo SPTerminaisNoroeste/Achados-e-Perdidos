@@ -1,1 +1,131 @@
-<!-- Visitas administrativas -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Relatório de Visitas - SP Terminais Noroeste</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: linear-gradient(to right, #051a2b, #00324e);
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      padding: 20px;
+      background-color: #002b45;
+      border-bottom: 2px solid #00aaff;
+      text-align: center;
+    }
+
+    header h1 {
+      color: #00ffcc;
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .subtitulo {
+      font-size: 15px;
+      color: #ccc;
+      margin-top: 5px;
+    }
+
+    .conteudo {
+      padding: 40px 20px;
+    }
+
+    table {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      background-color: #013044;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #005577;
+      color: #00ffcc;
+    }
+
+    tr:nth-child(even) {
+      background-color: #00293d;
+    }
+
+    tr:hover {
+      background-color: #00425f;
+    }
+
+    footer {
+      background-color: #002b45;
+      color: #999;
+      padding: 15px;
+      font-size: 14px;
+      border-top: 1px solid #005577;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    footer small {
+      display: block;
+      font-size: 11px;
+      color: #888;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Relatório de Visitas</h1>
+    <div class="subtitulo">SP Terminais Noroeste</div>
+  </header>
+
+  <div class="conteudo">
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Horário</th>
+          <th>Página acessada</th>
+          <th>IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>30/06/2025</td>
+          <td>08:12</td>
+          <td>cadastro.html</td>
+          <td>189.122.34.88</td>
+        </tr>
+        <tr>
+          <td>30/06/2025</td>
+          <td>08:15</td>
+          <td>consulta.html</td>
+          <td>189.122.34.88</td>
+        </tr>
+        <tr>
+          <td>29/06/2025</td>
+          <td>17:46</td>
+          <td>login.html</td>
+          <td>201.45.88.210</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    © 2025 - SP Terminais Noroeste
+    <small>Prestar serviços de gestão integrada no apoio ao transporte de passageiros e atendimento ao cidadão - SPTerminais Noroeste.</small>
+  </footer>
+</body>
+</html>
