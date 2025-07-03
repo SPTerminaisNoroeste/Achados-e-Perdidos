@@ -2,59 +2,52 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel Administrativo PRO</title>
+  <title>Painel Administrativo - Achados e Perdidos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #051a2b, #00324e);
+      background: #001f2f;
       color: white;
       padding: 20px;
     }
     h1 {
-      text-align: center;
       color: #00ffcc;
+      text-align: center;
     }
     .top-bar {
       display: flex;
-      justify-content: center;
       gap: 10px;
       flex-wrap: wrap;
+      justify-content: center;
       margin-bottom: 20px;
     }
-    input, select {
-      padding: 8px;
-      font-size: 15px;
+    input, select, button {
+      padding: 10px;
       border-radius: 5px;
+      border: none;
+      font-size: 14px;
     }
     button {
-      padding: 8px 14px;
-      font-size: 14px;
-      background-color: #00aaff;
+      background: #00aaff;
       color: white;
-      border: none;
-      border-radius: 5px;
       cursor: pointer;
     }
     button:hover {
-      background-color: #008fcc;
+      background: #0088cc;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: #012c3c;
+      background: #002c40;
     }
     th, td {
-      border: 1px solid #005577;
       padding: 10px;
-      font-size: 14px;
+      border: 1px solid #004c66;
       text-align: center;
     }
     th {
-      background-color: #004c66;
-    }
-    tr:nth-child(even) {
-      background-color: #014054;
+      background: #004c66;
     }
     .modal {
       display: none;
@@ -64,56 +57,35 @@
       background-color: rgba(0,0,0,0.8);
       justify-content: center;
       align-items: center;
+      z-index: 1000;
     }
     .modal-content {
-      background: #003c5a;
+      background: #013a52;
       padding: 20px;
       border-radius: 10px;
       width: 90%;
       max-width: 500px;
+      color: white;
     }
-    .modal-content h2 {
-      margin-top: 0;
-      color: #00ffcc;
-    }
-    .modal-content label {
-      display: block;
-      margin-top: 10px;
-      text-align: left;
-    }
-    .modal-content input, .modal-content select, .modal-content textarea {
+    .modal-content input, .modal-content select {
       width: 100%;
+      margin: 10px 0;
       padding: 10px;
-      margin-top: 5px;
-      border: none;
       border-radius: 5px;
-    }
-    .modal-content button {
-      margin-top: 15px;
+      border: none;
     }
   </style>
 </head>
 <body>
-  <h1>Painel Administrativo PRO</h1>
-
+  <h1>Painel Administrativo</h1>
   <div class="top-bar">
-    <input type="text" id="busca" placeholder="Buscar por nome, protocolo..." oninput="carregarTabela()" />
-    <select id="terminalFiltro" onchange="carregarTabela()">
+    <input id="filtroBusca" placeholder="Buscar por nome ou protocolo" oninput="carregarCadastros()" />
+    <select id="filtroTerminal" onchange="carregarCadastros()">
       <option value="">Todos os Terminais</option>
-      <option>TPH - Terminal Pinheiros</option>
-      <option>TCL - Terminal Campo Limpo</option>
-      <option>TPI - Terminal Princesa Isabel</option>
-      <option>TAG - Terminal Amaral Gurgel</option>
-      <option>PEL - Parada Eldorado</option>
-      <option>PCL - Parada Clínicas</option>
-      <option>TLA - Terminal Lapa</option>
-      <option>TNC - Terminal Vila Nova Cachoeirinha</option>
-      <option>TPR - Terminal Pirituba</option>
-      <option>TCV - Terminal Casa Verde</option>
-      <option>TJB - Terminal Jardim Britânia</option>
+      <option>TPH</option><option>TCL</option><option>TPI</option><option>TAG</option>
+      <option>PEL</option><option>PCL</option><option>TLA</option><option>TNC</option>
+      <option>TPR</option><option>TCV</option><option>TJB</option>
     </select>
-    <button onclick="abrirModalNovo()">Registrar Manualmente</button>
-    <button onclick="window.location.href='estatisticas.html'">📊 Ver Gráficos</button>
   </div>
 
   <table>
@@ -123,89 +95,132 @@
         <th>Nome</th>
         <th>Objeto</th>
         <th>Status</th>
-        <th>Data</th>
         <th>Terminal</th>
+        <th>Data</th>
         <th>Ações</th>
       </tr>
     </thead>
-    <tbody id="tabela">
-      <tr><td colspan="7">🔄 Carregando dados...</td></tr>
+    <tbody id="tabelaCadastros">
+      <tr><td colspan="7">Carregando...</td></tr>
     </tbody>
   </table>
 
-  <div class="modal" id="modalCadastro">
+  <div class="modal" id="modalEdicao">
     <div class="modal-content">
       <h2>Editar Cadastro</h2>
-      <label>Nome:</label>
-      <input id="modalNome" />
-      <label>Objeto:</label>
-      <input id="modalObjeto" />
-      <label>Status:</label>
-      <select id="modalStatus">
-        <option>Perdido</option>
-        <option>Encontrado</option>
-        <option>Devolvido</option>
-      </select>
-      <label>Terminal:</label>
-      <select id="modalTerminal">
-        <option>TPH - Terminal Pinheiros</option>
-        <option>TCL - Terminal Campo Limpo</option>
-        <option>TPI - Terminal Princesa Isabel</option>
-        <option>TAG - Terminal Amaral Gurgel</option>
-        <option>PEL - Parada Eldorado</option>
-        <option>PCL - Parada Clínicas</option>
-        <option>TLA - Terminal Lapa</option>
-        <option>TNC - Terminal Vila Nova Cachoeirinha</option>
-        <option>TPR - Terminal Pirituba</option>
-        <option>TCV - Terminal Casa Verde</option>
-        <option>TJB - Terminal Jardim Britânia</option>
-      </select>
-      <label>Data:</label>
-      <input id="modalData" />
-      <button onclick="salvarEdicao()">💾 Salvar</button>
-      <button onclick="fecharModal()">❌ Cancelar</button>
+      <input id="editNome" placeholder="Nome completo" />
+      <input id="editObjeto" placeholder="Objeto" />
+      <input id="editStatus" placeholder="Status (Perdido, Encontrado, Devolvido)" />
+      <input id="editTerminal" placeholder="Terminal" />
+      <input id="editData" placeholder="Data" />
+      <button onclick="salvarEdicao()">Salvar</button>
+      <button onclick="fecharModal()">Cancelar</button>
     </div>
   </div>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script>
-    function abrirModalNovo() {
-      alert('⚠️ Essa função será implementada com Firebase em breve.');
+    const firebaseConfig = {
+      apiKey: "AIzaSyClW5uMcGPlBK7ybE-t0NKN2iD0LGXJv2Y",
+      authDomain: "achados-e-perdidos-fa6f4.firebaseapp.com",
+      projectId: "achados-e-perdidos-fa6f4",
+      storageBucket: "achados-e-perdidos-fa6f4.appspot.com",
+      messagingSenderId: "219107446393",
+      appId: "1:219107446393:web:fd671f343e0bbd36e5cb2b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let idAtual = "";
+    function carregarCadastros() {
+      const tabela = document.getElementById("tabelaCadastros");
+      const filtroBusca = document.getElementById("filtroBusca").value.toLowerCase();
+      const filtroTerminal = document.getElementById("filtroTerminal").value;
+      tabela.innerHTML = "";
+
+      db.collection("cadastros").get().then(snapshot => {
+        if (snapshot.empty) {
+          tabela.innerHTML = "<tr><td colspan='7'>Nenhum cadastro encontrado.</td></tr>";
+          return;
+        }
+
+        snapshot.forEach(doc => {
+          const dados = doc.data();
+          if (
+            (filtroTerminal && dados.terminal !== filtroTerminal) ||
+            (filtroBusca && !(
+              dados.nome?.toLowerCase().includes(filtroBusca) ||
+              dados.protocolo?.toLowerCase().includes(filtroBusca)
+            ))
+          ) return;
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${dados.protocolo || ""}</td>
+            <td>${dados.nome || ""}</td>
+            <td>${dados.objeto || ""}</td>
+            <td>${dados.status || ""}</td>
+            <td>${dados.terminal || ""}</td>
+            <td>${dados.data || ""}</td>
+            <td>
+              <button onclick="abrirModal('${doc.id}', '${dados.nome}', '${dados.objeto}', '${dados.status}', '${dados.terminal}', '${dados.data}')">✏️</button>
+              <button onclick="atualizarStatus('${doc.id}', 'Encontrado')">✔️</button>
+              <button onclick="atualizarStatus('${doc.id}', 'Devolvido')">♻️</button>
+              <button onclick="confirmarMensagem('${dados.nome}')">📩</button>
+              <button onclick="excluirCadastro('${doc.id}')">🗑️</button>
+            </td>
+          `;
+          tabela.appendChild(tr);
+        });
+      });
     }
 
-    function abrirModalEditar() {
-      document.getElementById('modalCadastro').style.display = 'flex';
+    function abrirModal(id, nome, objeto, status, terminal, data) {
+      idAtual = id;
+      document.getElementById("editNome").value = nome;
+      document.getElementById("editObjeto").value = objeto;
+      document.getElementById("editStatus").value = status;
+      document.getElementById("editTerminal").value = terminal;
+      document.getElementById("editData").value = data;
+      document.getElementById("modalEdicao").style.display = "flex";
     }
 
     function fecharModal() {
-      document.getElementById('modalCadastro').style.display = 'none';
+      document.getElementById("modalEdicao").style.display = "none";
     }
 
     function salvarEdicao() {
-      alert('✅ Edição salva (simulação). Integração Firebase será implementada.');
-      fecharModal();
+      const nome = document.getElementById("editNome").value;
+      const objeto = document.getElementById("editObjeto").value;
+      const status = document.getElementById("editStatus").value;
+      const terminal = document.getElementById("editTerminal").value;
+      const data = document.getElementById("editData").value;
+
+      db.collection("cadastros").doc(idAtual).update({ nome, objeto, status, terminal, data }).then(() => {
+        fecharModal();
+        carregarCadastros();
+      });
     }
 
-    function carregarTabela() {
-      const tabela = document.getElementById("tabela");
-      tabela.innerHTML = `
-        <tr>
-          <td>MT#1234@</td>
-          <td>Mateus Cléber</td>
-          <td>Carteira</td>
-          <td>Perdido</td>
-          <td>01/07/2025</td>
-          <td>TPH</td>
-          <td>
-            <button onclick="abrirModalEditar()">✏️ Editar</button>
-            <button onclick="alert('📤 Mensagem simulada enviada!')">📩 Informar Cliente</button>
-            <button onclick="alert('✔️ Status atualizado!')">✔️ Marcar Encontrado</button>
-            <button onclick="alert('🗑️ Cadastro excluído (simulado)')">🗑️ Excluir</button>
-          </td>
-        </tr>
-      `;
+    function atualizarStatus(id, novoStatus) {
+      db.collection("cadastros").doc(id).update({ status: novoStatus }).then(carregarCadastros);
     }
 
-    carregarTabela();
+    function confirmarMensagem(nome) {
+      if (confirm(`Deseja informar o cliente ${nome} sobre o item?`)) {
+        alert("Mensagem simulada enviada.");
+      }
+    }
+
+    function excluirCadastro(id) {
+      if (confirm("Tem certeza que deseja excluir este cadastro?")) {
+        db.collection("cadastros").doc(id).delete().then(carregarCadastros);
+      }
+    }
+
+    carregarCadastros();
   </script>
 </body>
 </html>
