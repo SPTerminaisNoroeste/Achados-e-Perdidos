@@ -1,11 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cadastrar Objeto Perdido - SP Terminais Noroeste</title>
-  <link rel="stylesheet" href="style.css">
   <style>
     body {
       background: linear-gradient(to right, #051a2b, #00324e);
@@ -15,18 +13,15 @@
       margin: 0;
       padding: 0;
     }
-
     header {
       background-color: #002b45;
       padding: 20px;
       border-bottom: 2px solid #00aaff;
     }
-
     header h1 {
       margin: 0;
       color: #00ffcc;
     }
-
     .form-container {
       max-width: 550px;
       margin: 30px auto;
@@ -35,7 +30,6 @@
       border-radius: 10px;
       border: 1px solid #005577;
     }
-
     input, select, textarea, button {
       width: 100%;
       padding: 12px;
@@ -44,22 +38,18 @@
       border-radius: 6px;
       border: none;
     }
-
     input[type="file"] {
       background-color: #eee;
       color: black;
     }
-
     button {
       background-color: #00aaff;
       color: white;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #008fcc;
     }
-
     footer {
       margin-top: 40px;
       background-color: #002b45;
@@ -67,7 +57,6 @@
       color: #999;
       font-size: 14px;
     }
-
     footer small {
       font-size: 11px;
       color: #888;
@@ -75,16 +64,12 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>Cadastrar Objeto Perdido</h1>
-  </header>
-
+  <header><h1>Cadastrar Objeto Perdido</h1></header>
   <div class="form-container">
-    <form onsubmit="gerarProtocolo(event)">
-      <input type="text" placeholder="Nome completo" required />
-      <input type="tel" placeholder="Telefone de contato" required />
-      <input type="text" placeholder="Documento (RG ou CPF)" required />
-
+    <form onsubmit="salvarCadastro(event)">
+      <input id="nome" type="text" placeholder="Nome completo" required />
+      <input id="telefone" type="tel" placeholder="Telefone de contato" required />
+      <input id="documento" type="text" placeholder="Documento (RG ou CPF)" required />
       <select id="objeto" required>
         <option value="">Selecione o objeto</option>
         <option>Carteira</option>
@@ -93,29 +78,65 @@
         <option>Roupa</option>
         <option>Outros</option>
       </select>
-
-      <input type="text" placeholder="Marca / Modelo" />
-      <input type="text" placeholder="Avarias / Características Visuais" />
-      <textarea placeholder="Observações adicionais" rows="4"></textarea>
-
+      <input id="marca" type="text" placeholder="Marca / Modelo" />
+      <input id="avarias" type="text" placeholder="Avarias / Características Visuais" />
+      <textarea id="observacoes" placeholder="Observações adicionais" rows="4"></textarea>
       <label style="text-align:left;display:block;font-size:14px;color:#ccc;">(Opcional) Envie uma foto do objeto:</label>
-      <input type="file" accept="image/*" />
-
+      <input id="foto" type="file" accept="image/*" />
       <button type="submit">Cadastrar</button>
     </form>
   </div>
-
   <footer>
     © 2025 - SP Terminais Noroeste<br/>
     <small>Prestar serviços de gestão integrada no apoio ao transporte de passageiros e atendimento ao cidadão.</small>
   </footer>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"></script>
   <script>
-    function gerarProtocolo(event) {
+    const firebaseConfig = {
+      apiKey: "AIzaSyClW5uMcGPlBK7ybE-t0NKN2iD0LGXJv2Y",
+      authDomain: "achados-e-perdidos-fa6f4.firebaseapp.com",
+      projectId: "achados-e-perdidos-fa6f4",
+      storageBucket: "achados-e-perdidos-fa6f4.appspot.com",
+      messagingSenderId: "219107446393",
+      appId: "1:219107446393:web:fd671f343e0bbd36e5cb2b"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    async function salvarCadastro(event) {
       event.preventDefault();
-      const random = Math.floor(Math.random() * 9000 + 1000);
-      const protocolo = `MT#${random}@`;
-      window.location.href = `protocolo-popup.html?protocolo=${encodeURIComponent(protocolo)}`;
+      const nome = document.getElementById("nome").value;
+      const telefone = document.getElementById("telefone").value;
+      const documento = document.getElementById("documento").value;
+      const objeto = document.getElementById("objeto").value;
+      const marca = document.getElementById("marca").value;
+      const avarias = document.getElementById("avarias").value;
+      const observacoes = document.getElementById("observacoes").value;
+      const protocolo = "MT#" + Math.floor(Math.random() * 9000 + 1000) + "@";
+      const data = new Date().toLocaleDateString("pt-BR");
+      const status = "Perdido";
+
+      const fotoInput = document.getElementById("foto");
+      let fotoURL = "";
+
+      if (fotoInput.files.length > 0) {
+        const file = fotoInput.files[0];
+        const storageRef = storage.ref().child("fotos/" + protocolo + "-" + file.name);
+        await storageRef.put(file);
+        fotoURL = await storageRef.getDownloadURL();
+      }
+
+      await db.collection("cadastros").add({
+        nome, telefone, documento, objeto, marca, avarias, observacoes,
+        protocolo, data, status, fotoURL
+      });
+
+      window.location.href = "protocolo-popup.html?protocolo=" + encodeURIComponent(protocolo);
     }
   </script>
 </body>
