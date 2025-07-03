@@ -79,6 +79,14 @@
         <option>Roupa</option>
         <option>Outros</option>
       </select>
+      
+      <div id="subtipo-container" style="display:none;">
+        <select id="subtipo">
+          <option value="">Selecione o subtipo</option>
+        </select>
+      </div>
+      <input id="cor" type="text" placeholder="Cor do item" required />
+
       <input id="marca" type="text" placeholder="Marca / Modelo" />
       <input id="avarias" type="text" placeholder="Avarias / Características Visuais" />
       <textarea id="observacoes" placeholder="Observações adicionais" rows="4"></textarea>
@@ -140,5 +148,53 @@
       window.location.href = "protocolo-popup.html?protocolo=" + encodeURIComponent(protocolo);
     }
   </script>
+
+<script>
+  const subtiposPorCategoria = {
+    Roupa: [
+      "CAMISAS", "Camisa social tradicional", "Camisa social slim", "Camisa com colarinho esportivo", 
+      "Camisa polo", "Camisa de linho", "Camisa jeans", "Camisa xadrez", "Camisa flanela",
+      "CALÇAS", "Calça jogger", "Calça social", "Calça cargo", "Calça flare", "Calça pantalona", 
+      "Calça pantacourt", "Calça moletom",
+      "SHORTS", "Short jeans masculino", "Short jeans feminino", "Shorts de alfaiataria", 
+      "Shorts fitness", "Shorts estampados", "Shorts de moletom", "Shorts mom", 
+      "Shorts cintura alta", "Shorts saia",
+      "BLUSAS", "Blusa básica t-shirt", "Blusa cropped", "Blusa bufante", "Blusa de linho", 
+      "Blusa manga longa", "Blusa transparente", "Blusa com babados", "Blusa com laço no pescoço",
+      "Blusa de crochê", "Blusa Boho", "Blusa Peplum", "Blusa de tricot",
+      "CALÇADOS", "Tênis", "Sapatos", "Botas"
+    ]
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const objetoSelect = document.getElementById("objeto");
+    const subtipoDiv = document.getElementById("subtipo-container");
+    const subtipoSelect = document.getElementById("subtipo");
+
+    objetoSelect.addEventListener("change", () => {
+      const selected = objetoSelect.value;
+      if (subtiposPorCategoria[selected]) {
+        subtipoDiv.style.display = "block";
+        subtipoSelect.innerHTML = "";
+        subtiposPorCategoria[selected].forEach(item => {
+          if (["CAMISAS", "CALÇAS", "SHORTS", "BLUSAS", "CALÇADOS"].includes(item)) {
+            subtipoSelect.innerHTML += `<optgroup label="${item}"></optgroup>`;
+          } else {
+            const lastGroup = subtipoSelect.lastElementChild;
+            if (lastGroup && lastGroup.tagName === "OPTGROUP") {
+              lastGroup.innerHTML += `<option value="${item}">${item}</option>`;
+            } else {
+              subtipoSelect.innerHTML += `<option value="${item}">${item}</option>`;
+            }
+          }
+        });
+      } else {
+        subtipoDiv.style.display = "none";
+        subtipoSelect.innerHTML = "";
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
