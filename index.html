@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -100,5 +99,32 @@
     © 2025 - SP Terminais Noroeste
     <small>Prestar serviços de gestão integrada no apoio ao transporte de passageiros e atendimento ao cidadão - SPTerminais Noroeste.</small>
   </footer>
+
+  <!-- 🔥 Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+
+  <!-- 🔧 Configuração Firebase -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "achados-e-perdidos-fa6f4.firebaseapp.com",
+      projectId: "achados-e-perdidos-fa6f4",
+      storageBucket: "achados-e-perdidos-fa6f4.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abc123def456ghi789"
+    };
+
+    // Inicializa Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Teste: adiciona um documento de teste no Firestore
+    db.collection("testes").add({
+      mensagem: "Testando conexão Firebase!"
+    })
+    .then(() => console.log("🔥 Firebase conectado com sucesso"))
+    .catch((erro) => console.error("Erro ao conectar Firebase:", erro));
+  </script>
 </body>
 </html>
