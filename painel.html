@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Administrativo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel Administrativo PRO</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -15,15 +15,32 @@
       text-align: center;
       color: #00ffcc;
     }
-    input {
+    .top-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    input, select {
       padding: 8px;
-      font-size: 16px;
-      margin-bottom: 10px;
-      width: 60%;
+      font-size: 15px;
+      border-radius: 5px;
+    }
+    button {
+      padding: 8px 14px;
+      font-size: 14px;
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #008fcc;
     }
     table {
       width: 100%;
-      margin-top: 20px;
       border-collapse: collapse;
       background-color: #012c3c;
     }
@@ -31,6 +48,7 @@
       border: 1px solid #005577;
       padding: 10px;
       font-size: 14px;
+      text-align: center;
     }
     th {
       background-color: #004c66;
@@ -38,11 +56,66 @@
     tr:nth-child(even) {
       background-color: #014054;
     }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #003c5a;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+      color: #00ffcc;
+    }
+    .modal-content label {
+      display: block;
+      margin-top: 10px;
+      text-align: left;
+    }
+    .modal-content input, .modal-content select, .modal-content textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 5px;
+    }
+    .modal-content button {
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
-  <h1>Painel Administrativo</h1>
-  <input type="text" id="busca" placeholder="Buscar por nome, protocolo, objeto..." oninput="filtrarTabela()">
+  <h1>Painel Administrativo PRO</h1>
+
+  <div class="top-bar">
+    <input type="text" id="busca" placeholder="Buscar por nome, protocolo..." oninput="carregarTabela()" />
+    <select id="terminalFiltro" onchange="carregarTabela()">
+      <option value="">Todos os Terminais</option>
+      <option>TPH - Terminal Pinheiros</option>
+      <option>TCL - Terminal Campo Limpo</option>
+      <option>TPI - Terminal Princesa Isabel</option>
+      <option>TAG - Terminal Amaral Gurgel</option>
+      <option>PEL - Parada Eldorado</option>
+      <option>PCL - Parada Clínicas</option>
+      <option>TLA - Terminal Lapa</option>
+      <option>TNC - Terminal Vila Nova Cachoeirinha</option>
+      <option>TPR - Terminal Pirituba</option>
+      <option>TCV - Terminal Casa Verde</option>
+      <option>TJB - Terminal Jardim Britânia</option>
+    </select>
+    <button onclick="abrirModalNovo()">Registrar Manualmente</button>
+    <button onclick="window.location.href='estatisticas.html'">📊 Ver Gráficos</button>
+  </div>
+
   <table>
     <thead>
       <tr>
@@ -51,68 +124,88 @@
         <th>Objeto</th>
         <th>Status</th>
         <th>Data</th>
-        <th>Foto</th>
+        <th>Terminal</th>
+        <th>Ações</th>
       </tr>
     </thead>
-    <tbody id="tabela"></tbody>
+    <tbody id="tabela">
+      <tr><td colspan="7">🔄 Carregando dados...</td></tr>
+    </tbody>
   </table>
 
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+  <div class="modal" id="modalCadastro">
+    <div class="modal-content">
+      <h2>Editar Cadastro</h2>
+      <label>Nome:</label>
+      <input id="modalNome" />
+      <label>Objeto:</label>
+      <input id="modalObjeto" />
+      <label>Status:</label>
+      <select id="modalStatus">
+        <option>Perdido</option>
+        <option>Encontrado</option>
+        <option>Devolvido</option>
+      </select>
+      <label>Terminal:</label>
+      <select id="modalTerminal">
+        <option>TPH - Terminal Pinheiros</option>
+        <option>TCL - Terminal Campo Limpo</option>
+        <option>TPI - Terminal Princesa Isabel</option>
+        <option>TAG - Terminal Amaral Gurgel</option>
+        <option>PEL - Parada Eldorado</option>
+        <option>PCL - Parada Clínicas</option>
+        <option>TLA - Terminal Lapa</option>
+        <option>TNC - Terminal Vila Nova Cachoeirinha</option>
+        <option>TPR - Terminal Pirituba</option>
+        <option>TCV - Terminal Casa Verde</option>
+        <option>TJB - Terminal Jardim Britânia</option>
+      </select>
+      <label>Data:</label>
+      <input id="modalData" />
+      <button onclick="salvarEdicao()">💾 Salvar</button>
+      <button onclick="fecharModal()">❌ Cancelar</button>
+    </div>
+  </div>
+
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyClW5uMcGPlBK7ybE-t0NKN2iD0LGXJv2Y",
-      authDomain: "achados-e-perdidos-fa6f4.firebaseapp.com",
-      projectId: "achados-e-perdidos-fa6f4",
-      storageBucket: "achados-e-perdidos-fa6f4.appspot.com",
-      messagingSenderId: "219107446393",
-      appId: "1:219107446393:web:fd671f343e0bbd36e5cb2b"
-    };
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    function abrirModalNovo() {
+      alert('⚠️ Essa função será implementada com Firebase em breve.');
+    }
 
-    let todosCadastros = [];
+    function abrirModalEditar() {
+      document.getElementById('modalCadastro').style.display = 'flex';
+    }
 
-    db.collection("cadastros").onSnapshot((snapshot) => {
-      todosCadastros = [];
-      snapshot.forEach(doc => {
-        todosCadastros.push(doc.data());
-      });
-      renderizarTabela();
-    });
+    function fecharModal() {
+      document.getElementById('modalCadastro').style.display = 'none';
+    }
 
-    function renderizarTabela() {
+    function salvarEdicao() {
+      alert('✅ Edição salva (simulação). Integração Firebase será implementada.');
+      fecharModal();
+    }
+
+    function carregarTabela() {
       const tabela = document.getElementById("tabela");
-      tabela.innerHTML = "";
-      const filtro = document.getElementById("busca").value.toLowerCase();
-
-      todosCadastros.forEach(cadastro => {
-        if (
-          cadastro.nome.toLowerCase().includes(filtro) ||
-          cadastro.protocolo.toLowerCase().includes(filtro) ||
-          cadastro.objeto.toLowerCase().includes(filtro)
-        ) {
-          tabela.innerHTML += `
-            <tr>
-              <td>${cadastro.protocolo}</td>
-              <td>${cadastro.nome}</td>
-              <td>${cadastro.objeto}</td>
-              <td>${cadastro.status}</td>
-              <td>${cadastro.data}</td>
-              <td>${cadastro.fotoURL ? `<a href="${cadastro.fotoURL}" target="_blank">Ver</a>` : "-"}</td>
-            </tr>
-          `;
-        }
-      });
-
-      if (tabela.innerHTML === "") {
-        tabela.innerHTML = "<tr><td colspan='6'>Nenhum resultado encontrado.</td></tr>";
-      }
+      tabela.innerHTML = `
+        <tr>
+          <td>MT#1234@</td>
+          <td>Mateus Cléber</td>
+          <td>Carteira</td>
+          <td>Perdido</td>
+          <td>01/07/2025</td>
+          <td>TPH</td>
+          <td>
+            <button onclick="abrirModalEditar()">✏️ Editar</button>
+            <button onclick="alert('📤 Mensagem simulada enviada!')">📩 Informar Cliente</button>
+            <button onclick="alert('✔️ Status atualizado!')">✔️ Marcar Encontrado</button>
+            <button onclick="alert('🗑️ Cadastro excluído (simulado)')">🗑️ Excluir</button>
+          </td>
+        </tr>
+      `;
     }
 
-    function filtrarTabela() {
-      renderizarTabela();
-    }
+    carregarTabela();
   </script>
 </body>
 </html>
