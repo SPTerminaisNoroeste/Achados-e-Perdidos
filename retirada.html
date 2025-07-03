@@ -3,124 +3,139 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <title>Solicitação de Retirada - SP Terminais Noroeste</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Solicitar Retirada - SP Terminais Noroeste</title>
-  <link rel="stylesheet" href="style.css">
   <style>
     body {
       background: linear-gradient(to right, #051a2b, #00324e);
       color: white;
       font-family: Arial, sans-serif;
+      text-align: center;
       margin: 0;
       padding: 0;
-      text-align: center;
     }
-
-    header {
-      padding: 20px;
-      background-color: #002b45;
-      border-bottom: 2px solid #00aaff;
-    }
-
-    header h1 {
+    h1 {
+      margin-top: 30px;
       color: #00ffcc;
-      margin: 0;
-      font-size: 26px;
     }
-
-    .subtitulo {
-      font-size: 15px;
+    .sub {
       color: #ccc;
-      margin-top: 5px;
+      margin-bottom: 30px;
     }
-
-    .conteudo {
-      padding: 40px 20px;
-    }
-
-    form {
+    .form-container {
       max-width: 400px;
       margin: 0 auto;
-      background-color: #013044;
-      border-radius: 10px;
+      background: #013044;
       padding: 20px;
+      border-radius: 10px;
       border: 1px solid #005577;
     }
-
-    input {
-      display: block;
+    input, button {
       width: 100%;
-      margin: 15px 0;
       padding: 12px;
-      border-radius: 6px;
-      border: none;
-      font-size: 15px;
-    }
-
-    button {
-      padding: 12px 20px;
+      margin: 10px 0;
       font-size: 16px;
       border-radius: 6px;
       border: none;
+    }
+    button {
       background-color: #00aaff;
       color: white;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #008fcc;
     }
-
-    #mensagem {
+    .mensagem {
       margin-top: 20px;
-      color: #00ffcc;
       font-size: 16px;
-      display: none;
-    }
-
-    footer {
-      background-color: #002b45;
-      color: #999;
+      color: #00ffcc;
+      background-color: #002c40;
       padding: 15px;
-      font-size: 14px;
-      border-top: 1px solid #005577;
-      margin-top: 40px;
+      border-radius: 8px;
     }
-
+    footer {
+      margin-top: 40px;
+      background-color: #002b45;
+      padding: 15px;
+      color: #999;
+      font-size: 14px;
+    }
     footer small {
-      display: block;
       font-size: 11px;
       color: #888;
-      margin-top: 5px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Solicitação de Retirada</h1>
-    <div class="subtitulo">SP Terminais Noroeste</div>
-  </header>
-
-  <div class="conteudo">
-    <form onsubmit="enviarSolicitacao(event)">
-      <input type="text" id="protocolo" placeholder="Número do protocolo" required />
-      <input type="text" id="nome" placeholder="Seu nome completo" required />
-      <input type="tel" id="contato" placeholder="Telefone ou e-mail" required />
+  <h1>Solicitação de Retirada</h1>
+  <div class="sub">SP Terminais Noroeste</div>
+  <div class="form-container">
+    <form onsubmit="verificarRetirada(event)">
+      <input id="protocolo" type="text" placeholder="Número do protocolo" required />
+      <input id="nome" type="text" placeholder="Seu nome completo" required />
+      <input id="contato" type="text" placeholder="Telefone ou e-mail" required />
       <button type="submit">Enviar Solicitação</button>
     </form>
-    <div id="mensagem">✅ Solicitação enviada com sucesso! Entraremos em contato.</div>
+    <div class="mensagem" id="mensagem"></div>
   </div>
 
   <footer>
-    © 2025 - SP Terminais Noroeste
+    © 2025 - SP Terminais Noroeste<br/>
     <small>Prestar serviços de gestão integrada no apoio ao transporte de passageiros e atendimento ao cidadão - SPTerminais Noroeste.</small>
   </footer>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script>
-    function enviarSolicitacao(event) {
+    const firebaseConfig = {
+      apiKey: "AIzaSyClW5uMcGPlBK7ybE-t0NKN2iD0LGXJv2Y",
+      authDomain: "achados-e-perdidos-fa6f4.firebaseapp.com",
+      projectId: "achados-e-perdidos-fa6f4",
+      storageBucket: "achados-e-perdidos-fa6f4.appspot.com",
+      messagingSenderId: "219107446393",
+      appId: "1:219107446393:web:fd671f343e0bbd36e5cb2b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function verificarRetirada(event) {
       event.preventDefault();
-      document.getElementById("mensagem").style.display = "block";
-      event.target.reset();
+      const protocolo = document.getElementById("protocolo").value.trim();
+      const nome = document.getElementById("nome").value.trim();
+      const msg = document.getElementById("mensagem");
+      msg.innerHTML = "Verificando...";
+
+      const snapshot = await db.collection("cadastros").where("protocolo", "==", protocolo).get();
+      if (snapshot.empty) {
+        msg.innerHTML = "❌ Protocolo não encontrado. Verifique os dados informados.";
+        return;
+      }
+
+      let encontrado = false;
+      snapshot.forEach(doc => {
+        const dados = doc.data();
+        if (dados.nome.toLowerCase() === nome.toLowerCase()) {
+          encontrado = true;
+          if (dados.status === "Encontrado" || dados.status === "Devolvido") {
+            msg.innerHTML = `
+              ✅ Olá, <strong>${dados.nome}</strong>! Encontramos seu item: <strong>${dados.objeto}</strong>.<br><br>
+              Ele está disponível para retirada no terminal: <strong>${dados.terminal}</strong>.<br><br>
+              Compareça com documento e o número do protocolo: <strong>${dados.protocolo}</strong>.
+            `;
+          } else {
+            msg.innerHTML = `
+              🔍 Olá, <strong>${dados.nome}</strong>. Seu item ainda não foi localizado.<br><br>
+              Continuamos procurando. Número do protocolo: <strong>${dados.protocolo}</strong>.
+            `;
+          }
+        }
+      });
+
+      if (!encontrado) {
+        msg.innerHTML = "❌ Nome não confere com o protocolo informado.";
+      }
     }
   </script>
 </body>
